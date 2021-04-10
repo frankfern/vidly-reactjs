@@ -64,7 +64,7 @@ class MovieList extends React.Component {
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
     const movies = paginate(sorted, currentPage, pageSize);
 
-    return { filterCount: filtered.length, data: movies };
+    return { totalCount: filtered.length, data: movies };
   };
 
   render() {

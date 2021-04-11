@@ -25,7 +25,7 @@
   },
   "eslintConfig": {
     "extends": [
-      "react-aclearpp",
+      "react-app",
       "react-app/jest"
     ]
   },

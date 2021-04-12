@@ -63,10 +63,10 @@ class MovieList extends React.Component {
       searchQuery,
     } = this.state;
 
-    const filtered = allMovies;
+    let filtered = allMovies;
     if (searchQuery)
       filtered = allMovies.filter((m) =>
-        m.title.toLowerCase().startsWith(search.toLowerCase())
+        m.title.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
     else if (selectedGenre && selectedGenre._id)
       allMovies = allMovies.filter((m) => m.genre._id === selectedGenre._id);
@@ -79,7 +79,7 @@ class MovieList extends React.Component {
 
   render() {
     const { length: count } = this.state.movies;
-    const { currentPage, pageSize, sortColumn } = this.state;
+    const { currentPage, pageSize, sortColumn, searchQuery } = this.state;
 
     if (count === 0) return <p>There is no movies in the database</p>;
 
@@ -104,7 +104,7 @@ class MovieList extends React.Component {
             >
               New Movie
             </Link>
-            <SearchBox value={} onChange={this.handleSearch} />
+            <SearchBox value={searchQuery} onChange={this.handleSearch} />
             <p>There is {totalCount} movies in the database.</p>
             <MoviesTable
               movies={movies}

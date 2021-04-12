@@ -1,20 +1,21 @@
 import React from "react";
-import ListGroup from "./common/listGroup";
-import Pagination from "./common/pagination";
-import MoviesTable from "./moviesTable";
+import { Link } from "react-router-dom";
 import { paginate } from "../utils/paginate";
 import { getGenres } from "../services/fakeGenreService";
 import { getMovies, deleteMovie } from "../services/fakeMovieService";
 import _ from "lodash";
-import { Link } from "react-router-dom";
-
+import SearchBox from "./common/searchBox";
+import ListGroup from "./common/listGroup";
+import Pagination from "./common/pagination";
+import MoviesTable from "./moviesTable";
 class MovieList extends React.Component {
   state = {
     movies: [],
     genres: [],
     pageSize: 4,
     currentPage: 1,
-    selectedGenre: "",
+    searchQuery: "",
+    selectedGenre: null,
     sortColumn: { path: "title", order: "asc" },
   };
 
@@ -23,9 +24,11 @@ class MovieList extends React.Component {
     this.setState({ movies: getMovies(), genres });
   }
 
-  handleClick = (id) => {
-    deleteMovie(id);
-    this.setState(this.state.movies);
+  handleDelete = (movie) => {
+    const movies = this.state.movies.filter((m) => m._id !== movie._id);
+    this.setState({ movies });
+
+    deleteMovie(movie._id);
   };
 
   handleLike = (movie) => {
@@ -37,7 +40,7 @@ class MovieList extends React.Component {
   };
 
   handleGenreSelect = (genre) => {
-    this.setState({ selectedGenre: genre, currentPage: 1 });
+    this.setState({ selectedGenre: genre, searchQuery: "", currentPage: 1 });
   };
 
   handlePageChange = (page) => {
@@ -47,7 +50,9 @@ class MovieList extends React.Component {
   handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
-
+  handleSearch = (query) => {
+    this.setState({ selectedGenre: null, searchQuery: query, currentPage: 1 });
+  };
   getPagedData = () => {
     const {
       currentPage,
@@ -55,12 +60,16 @@ class MovieList extends React.Component {
       movies: allMovies,
       selectedGenre,
       sortColumn,
+      searchQuery,
     } = this.state;
 
-    const filtered =
-      selectedGenre && selectedGenre._id
-        ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
-        : allMovies;
+    const filtered = allMovies;
+    if (searchQuery)
+      filtered = allMovies.filter((m) =>
+        m.title.toLowerCase().startsWith(search.toLowerCase())
+      );
+    else if (selectedGenre && selectedGenre._id)
+      allMovies = allMovies.filter((m) => m.genre._id === selectedGenre._id);
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
     const movies = paginate(sorted, currentPage, pageSize);
@@ -95,10 +104,12 @@ class MovieList extends React.Component {
             >
               New Movie
             </Link>
+            <SearchBox value={} onChange={this.handleSearch} />
+            <p>There is {totalCount} movies in the database.</p>
             <MoviesTable
               movies={movies}
               sortColumn={sortColumn}
-              onDelete={this.handleClick}
+              onDelete={this.handleDelete}
               onLike={this.handleLike}
               onSort={this.handleSort}
             />

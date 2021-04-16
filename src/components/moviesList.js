@@ -3,13 +3,15 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { paginate } from "../utils/paginate";
 import { getGenres } from "../services/genreService";
-import { getMovies, deleteMovie } from "../services/movieService";
+// import { getMovies, deleteMovie } from "../services/movieService";
+import MovieService from "../services/asdMovieService";
 import _ from "lodash";
 import SearchBox from "./common/searchBox";
 import ListGroup from "./common/listGroup";
 import Pagination from "./common/pagination";
 import MoviesTable from "./moviesTable";
 import { toast } from "react-toastify";
+
 class MovieList extends React.Component {
   state = {
     movies: [],
@@ -23,7 +25,7 @@ class MovieList extends React.Component {
 
   async componentDidMount() {
     const { data } = await getGenres();
-    const { data: movies } = await getMovies();
+    const { data: movies } = await MovieService.list();
     const genres = [{ _id: "", name: "All Genres" }, ...data];
     this.setState({ movies, genres });
   }
@@ -33,7 +35,8 @@ class MovieList extends React.Component {
     const movies = originalMovies.filter((m) => m._id !== movie._id);
     this.setState({ movies });
     try {
-      await deleteMovie(movie._id);
+      console.log(movie);
+      // await deleteMovie(movie._id);
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
         toast.error("This movie has already been delted.");
@@ -79,7 +82,7 @@ class MovieList extends React.Component {
         m.title.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
     else if (selectedGenre && selectedGenre._id)
-      allMovies = allMovies.filter((m) => m.genre._id === selectedGenre._id);
+      filtered = allMovies.filter((m) => m.genre._id === selectedGenre._id);
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
     const movies = paginate(sorted, currentPage, pageSize);
@@ -91,7 +94,7 @@ class MovieList extends React.Component {
     const { length: count } = this.state.movies;
     const { currentPage, pageSize, sortColumn, searchQuery } = this.state;
 
-    // if (count === 0) return <p>There is no movies in the database</p>;
+    if (count === 0) return <p>There is no movies in the database</p>;
 
     const { totalCount, data: movies } = this.getPagedData();
 

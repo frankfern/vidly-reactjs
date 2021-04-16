@@ -16,7 +16,11 @@ export default function Pagination(props) {
             className={page === currentPage ? "page-item active" : "page-item"}
             key={page}
           >
-            <a className="page-link" href onClick={() => onPageChange(page)}>
+            <a
+              className="page-link"
+              href="#"
+              onClick={() => onPageChange(page)}
+            >
               {page}
             </a>
           </li>

@@ -13,6 +13,7 @@ class RegisterForm extends Form {
   doSubmit = () => {
     const { data: user } = this.state;
     registerUser(user);
+    this.props.history.push("/movies");
   };
 
   render() {
@@ -20,7 +21,7 @@ class RegisterForm extends Form {
       <div>
         <h1>Register</h1>
         <form onSubmit={this.handleSubmit}>
-          {this.renderInput("email", "Email", "email")}
+          {this.renderInput("username", "Username")}
           {this.renderInput("password", "Password", "password")}
           {this.renderInput("name", "Name")}
           {this.renderButton("Register")}
@@ -30,4 +31,4 @@ class RegisterForm extends Form {
   }
 }
 
-export default Register;
+export default RegisterForm;

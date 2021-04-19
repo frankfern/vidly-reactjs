@@ -10,10 +10,20 @@ class RegisterForm extends Form {
     password: Joi.string().required().label("Password").min(5),
     name: Joi.string().required().label("Name"),
   };
-  doSubmit = () => {
-    const { data: user } = this.state;
-    registerUser(user);
-    this.props.history.push("/movies");
+  doSubmit = async () => {
+    try {
+      const { data: user } = this.state;
+      const response = await registerUser(user);
+      localStorage.setItem("token", response.headers["x-auth-token"]);
+
+      this.props.history.push("/");
+    } catch (ex) {
+      if (ex.response && ex.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.username = ex.response.data;
+        this.setState({ errors });
+      }
+    }
   };
 
   render() {
